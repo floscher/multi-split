@@ -5,7 +5,7 @@
  * Created on February 2, 2006, 12:14 PM
  */
 
-package multisplit;
+package org.jdesktop.swingx;
 
 import junit.framework.*;
 
@@ -23,7 +23,7 @@ public class MultiSplitPaneTest extends TestCase {
         TestSuite suite = new TestSuite(MultiSplitPaneTest.class);
         return suite;
     }
-    
+
     public void testArticleExample1() {
     }
 }

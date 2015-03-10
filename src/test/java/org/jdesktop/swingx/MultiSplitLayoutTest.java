@@ -5,7 +5,7 @@
  * Created on February 10, 2006, 2:06 PM
  */
 
-package multisplit;
+package org.jdesktop.swingx;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -20,32 +20,63 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import junit.framework.*;
-import multisplit.MultiSplitLayout.Leaf;
-import multisplit.MultiSplitLayout.Divider;
-import multisplit.MultiSplitLayout.Split;
-import multisplit.MultiSplitLayout.InvalidLayoutException;
-import multisplit.MultiSplitLayout.Node;
+import org.jdesktop.swingx.MultiSplitLayout.Leaf;
+import org.jdesktop.swingx.MultiSplitLayout.Divider;
+import org.jdesktop.swingx.MultiSplitLayout.Split;
+import org.jdesktop.swingx.MultiSplitLayout.InvalidLayoutException;
+import org.jdesktop.swingx.MultiSplitLayout.Node;
+import org.jdesktop.swingx.MultiSplitLayout;
 
 
-/*
-  TBD - check Split.children property is equals ...
- */
 
 /**
  *
  * @author Hans Muller
  */
 public class MultiSplitLayoutTest extends TestCase {
-    
+
     public MultiSplitLayoutTest(String testName) {
         super(testName);
     }
-    
+
+    public void testSetModelIllegalArgument() {
+	MultiSplitLayout msl = new MultiSplitLayout();
+        try {
+	    msl.setModel(new Divider());
+            fail("Should throw IllegalArgumentException [1]");
+        }
+	catch(IllegalArgumentException e) { }
+        try {
+	    msl.setModel(null);
+            fail("Should throw IllegalArgumentException [2]");
+        }
+	catch(IllegalArgumentException e) { }
+    }
+
+
+    public void testSetDividerSizeIllegalArgument() {
+	MultiSplitLayout msl = new MultiSplitLayout();
+	msl.setDividerSize(0); // OK
+        try {
+	    msl.setDividerSize(-1);
+            fail("Should throw IllegalArgumentException");
+        }
+	catch(IllegalArgumentException e) { }
+    }
+
+
+
     private void checkNodeBasics(Node node) {
 	Rectangle zeroRectangle = new Rectangle(0, 0, 0, 0);
 	assertEquals("default weight is 0.0", node.getWeight(), 0.0);
 	assertEquals("default bounds are 0,0 0x0", node.getBounds(), zeroRectangle);
 	assertNull("default parent is null", node.getParent());
+	try {
+	    node.setBounds(null);
+	    fail("null bounds Rectangle, should throw IllegalArgumentException");
+	}
+	catch (IllegalArgumentException e) { }
+
     }
 
     private void checkNodeWeight(Node node) {
@@ -72,8 +103,8 @@ public class MultiSplitLayoutTest extends TestCase {
 
 	/* Check the children property.  Setter should
 	 * defensively copy children list, getter should return
-	 * a copy (could be read-only) that doesn't change when 
-	 * the Split's children property is reset.  Setter 
+	 * a copy (could be read-only) that doesn't change when
+	 * the Split's children property is reset.  Setter
 	 * should update old/new children's parent property.
 	 */
         Leaf one = new Leaf("one");
@@ -94,7 +125,7 @@ public class MultiSplitLayoutTest extends TestCase {
         Leaf foo = new Leaf("foo");
         Leaf bar = new Leaf("bar");
 	Divider dividerfb = new Divider();
-	List<Node> children3 = Arrays.asList(foo, dividerfb, bar);	
+	List<Node> children3 = Arrays.asList(foo, dividerfb, bar);
 	split.setChildren(children3);
 	for(Node child : children2) {
 	    assertNull("old Split child parent should be null", child.getParent());
@@ -102,6 +133,15 @@ public class MultiSplitLayoutTest extends TestCase {
 	for(Node child : children3) {
 	    assertEquals("new Split child parent should be Split", child.getParent(), split);
 	}
+
+	/* setChildren should throw IllegalArgumentException if
+	 * incoming List is null.
+	 */
+	try {
+	    split.setChildren(null);
+	    fail("null children List, should throw IllegalArgumentException");
+	}
+	catch (IllegalArgumentException e) { }
     }
 
     public void testLeafBasics() {
@@ -110,6 +150,16 @@ public class MultiSplitLayoutTest extends TestCase {
 	checkNodeBasics(leaf);
 	checkNodeWeight(leaf);
 	assertEquals("default name should be \"\"", leaf.getName(), "");
+	try {
+	    leaf.setName(null);
+	    fail("setName: null, should throw IllegalArgumentException");
+	}
+	catch (IllegalArgumentException e) { }
+	try {
+	    new Leaf(null);
+	    fail("Constructor: null Leaf name, should throw IllegalArgumentException");
+	}
+	catch (IllegalArgumentException e) { }
     }
 
     public void testDividerBasics() {
@@ -143,7 +193,7 @@ public class MultiSplitLayoutTest extends TestCase {
 	Border border = new EmptyBorder(10, 20, 30, 40); // top left bottom right
 	panel.setBorder(border);
 	panel.doLayout();
-	
+
 	Insets insets = border.getBorderInsets(panel);
 	int x = insets.left;
 	int y = insets.top;
@@ -154,17 +204,6 @@ public class MultiSplitLayoutTest extends TestCase {
 	assertEquals(leafComponent.getBounds(), leaf.getBounds());
     }
 
-
-    public void testSetModelIllegalArgument() {
-	MultiSplitLayout msl = new MultiSplitLayout();
-        try {
-	    msl.setModel(new Divider());
-            fail("Should throw IllegalArgumentException");
-        } 
-	catch(IllegalArgumentException e) {
-            // successful test
-	}
-    }
 
     /**
      * See private method MultiSplitLayout.checkLayout()
@@ -235,7 +274,7 @@ public class MultiSplitLayoutTest extends TestCase {
     }
 
     public void testSimpleRowSplit() {
-        Leaf one = new Leaf("one");  // left 
+        Leaf one = new Leaf("one");  // left
         Leaf two = new Leaf("two");  // right
 	Divider divider12 = new Divider();
 	Split split = new Split();
@@ -265,9 +304,9 @@ public class MultiSplitLayoutTest extends TestCase {
 	    Point p2 = split.getBounds().getLocation();
 	    assertEquals("Split's origin should be 0,0", p1, p2);
 	}
-	
+
 	/* Height of all split children should be the same as the
-	 * panel's height.  Width of Leaf "one" and JLabel "one" 
+	 * panel's height.  Width of Leaf "one" and JLabel "one"
 	 * should be the same as JLabel one's preferred width.
 	 * Width of the divider12 should be dividerSize and
 	 * Leaf/JLabel "two" should fill the remaining
@@ -346,9 +385,9 @@ public class MultiSplitLayoutTest extends TestCase {
 	    Point p2 = split.getBounds().getLocation();
 	    assertEquals("Split's origin should be 0,0", p1, p2);
 	}
-	
+
 	/* Width of all split children should be the same as the
-	 * panel's width.  Height of Leaf "one" and JLabel "one" 
+	 * panel's width.  Height of Leaf "one" and JLabel "one"
 	 * should be the same as JLabel one's preferred height.
 	 * Height of the divider12 should be dividerSize and
 	 * Leaf/JLabel "two" should fill the remaining
