@@ -8,12 +8,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -81,12 +81,12 @@ public class Example4 extends Example {
 
 	    /* This is just a hack.  It fails to restore
 	     * the mainFrame to its original location and
-	     * we probably don't really want to change the 
+	     * we probably don't really want to change the
 	     * multiSplitPane's preferred size permanently.
-	     * A general solution must also contend with 
-	     * having the mainFrame restored on a different 
+	     * A general solution must also contend with
+	     * having the mainFrame restored on a different
 	     * display configuration as well as enabling the
-	     * developer to constrain the initial position 
+	     * developer to constrain the initial position
 	     * of the mainFrame, e.g. "center it".
 	     */
 	    multiSplitPane.setPreferredSize(model.getBounds().getSize());
@@ -99,11 +99,11 @@ public class Example4 extends Example {
         multiSplitPane.add(new JButton("Middle Column Top"), "middle.top");
         multiSplitPane.add(new JButton("Middle"), "middle");
         multiSplitPane.add(new JButton("Middle Bottom"), "middle.bottom");
-                
+
 	Container cp = mainFrame.getContentPane();
 	cp.add(multiSplitPane, BorderLayout.CENTER);
     }
-    
+
     protected void quit() {
 	super.quit();
 	XMLEncoder e = null;
@@ -121,11 +121,11 @@ public class Example4 extends Example {
     }
 
     /* There are some (old) Java classes that aren't proper beans.  Rectangle
-     * is one of these.  When running within the secure sandbox, writing a 
-     * Rectangle with XMLEncoder causes a security exception because 
+     * is one of these.  When running within the secure sandbox, writing a
+     * Rectangle with XMLEncoder causes a security exception because
      * DefaultPersistenceDelegate calls Field.setAccessible(true) to gain
      * access to private fields.  This is a workaround for that problem.
-     * A bug has been filed, see http://monaco.sfbay/detail.jsf?cr=4741757  
+     * A bug has been filed, see http://monaco.sfbay/detail.jsf?cr=4741757
      */
     private static class RectanglePD extends DefaultPersistenceDelegate {
 	public RectanglePD() {
@@ -142,5 +142,5 @@ public class Example4 extends Example {
 
     public static void main(String[] args) {
         launch(Example4.class, args);
-    }    
+    }
 }
